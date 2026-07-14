@@ -11,7 +11,6 @@ import {
   KeyRound,
   Loader2,
   LockKeyhole,
-  ShieldCheck,
 } from 'lucide-react'
 
 import {
@@ -30,8 +29,8 @@ export function ResetPassword() {
 
 
   const [
-    password,
-    setPassword,
+    newPassword,
+    setNewPassword,
   ] = useState('')
 
 
@@ -42,8 +41,8 @@ export function ResetPassword() {
 
 
   const [
-    showPassword,
-    setShowPassword,
+    showNewPassword,
+    setShowNewPassword,
   ] = useState(false)
 
 
@@ -54,39 +53,42 @@ export function ResetPassword() {
 
 
   const [
-    loading,
-    setLoading,
-  ] = useState(false)
-
-
-  const [
-    checkingSession,
-    setCheckingSession,
+    checkingLink,
+    setCheckingLink,
   ] = useState(true)
 
 
   const [
-    recoverySessionAvailable,
-    setRecoverySessionAvailable,
+    validRecoveryLink,
+    setValidRecoveryLink,
   ] = useState(false)
 
 
   const [
-    error,
-    setError,
+    updating,
+    setUpdating,
+  ] = useState(false)
+
+
+  const [
+    errorMessage,
+    setErrorMessage,
   ] = useState('')
 
 
   const [
-    success,
-    setSuccess,
+    successMessage,
+    setSuccessMessage,
   ] = useState('')
 
 
   /*
-    CHECK WHETHER THE USER
-    OPENED A VALID PASSWORD
-    RECOVERY EMAIL LINK
+    CHECK PASSWORD RESET SESSION
+
+    When the customer clicks the
+    password reset link in Gmail,
+    Supabase creates a temporary
+    recovery session.
   */
 
   useEffect(() => {
@@ -96,12 +98,74 @@ export function ResetPassword() {
 
 
     async function
-    checkRecoverySession() {
+    checkRecoveryLink() {
 
       try {
 
+        /*
+          PKCE PASSWORD RESET LINK
+
+          New Supabase recovery links
+          can contain a code value.
+        */
+
+        const currentUrl =
+
+          new URL(
+            window
+              .location
+              .href
+          )
+
+
+        const recoveryCode =
+
+          currentUrl
+            .searchParams
+            .get(
+              'code'
+            )
+
+
+        if (
+          recoveryCode
+        ) {
+
+          const {
+            error:
+              exchangeError,
+          } = await supabase
+            .auth
+            .exchangeCodeForSession(
+              recoveryCode
+            )
+
+
+          if (
+            exchangeError
+          ) {
+
+            console.error(
+
+              'Recovery code error:',
+
+              exchangeError
+
+            )
+
+          }
+
+        }
+
+
+        /*
+          CHECK CURRENT
+          SUPABASE SESSION
+        */
+
         const {
           data,
+          error,
         } = await supabase
           .auth
           .getSession()
@@ -110,7 +174,32 @@ export function ResetPassword() {
         if (
           !active
         ) {
+
           return
+
+        }
+
+
+        if (
+          error
+        ) {
+
+          console.error(
+
+            'Recovery session error:',
+
+            error
+
+          )
+
+
+          setValidRecoveryLink(
+            false
+          )
+
+
+          return
+
         }
 
 
@@ -118,21 +207,42 @@ export function ResetPassword() {
           data.session
         ) {
 
-          setRecoverySessionAvailable(
+          setValidRecoveryLink(
             true
+          )
+
+        } else {
+
+          setValidRecoveryLink(
+            false
           )
 
         }
 
 
       } catch (
-        sessionError
+        recoveryError
       ) {
 
         console.error(
-          'Password recovery session error:',
-          sessionError
+
+          'Password recovery error:',
+
+          recoveryError
+
         )
+
+
+        if (
+          active
+        ) {
+
+          setValidRecoveryLink(
+            false
+          )
+
+        }
+
 
       } finally {
 
@@ -140,7 +250,7 @@ export function ResetPassword() {
           active
         ) {
 
-          setCheckingSession(
+          setCheckingLink(
             false
           )
 
@@ -151,8 +261,13 @@ export function ResetPassword() {
     }
 
 
-    checkRecoverySession()
+    checkRecoveryLink()
 
+
+    /*
+      LISTEN FOR SUPABASE
+      PASSWORD_RECOVERY EVENT
+    */
 
     const {
       data:
@@ -163,29 +278,41 @@ export function ResetPassword() {
 
         (
           event,
-          session
+          currentSession
         ) => {
 
           if (
             !active
           ) {
+
             return
+
           }
 
 
           if (
             event ===
-              'PASSWORD_RECOVERY' ||
-
-            session
+              'PASSWORD_RECOVERY'
           ) {
 
-            setRecoverySessionAvailable(
+            setValidRecoveryLink(
               true
             )
 
-            setCheckingSession(
+
+            setCheckingLink(
               false
+            )
+
+          }
+
+
+          if (
+            currentSession
+          ) {
+
+            setValidRecoveryLink(
+              true
             )
 
           }
@@ -211,11 +338,11 @@ export function ResetPassword() {
 
 
   /*
-    UPDATE PASSWORD
+    UPDATE CUSTOMER PASSWORD
   */
 
   async function
-  handlePasswordUpdate(
+  handleUpdatePassword(
 
     event:
       FormEvent<
@@ -228,25 +355,25 @@ export function ResetPassword() {
       .preventDefault()
 
 
-    setError('')
+    setErrorMessage('')
 
-    setSuccess('')
+    setSuccessMessage('')
 
 
     /*
-      CHECK RECOVERY
-      SESSION
+      CHECK RESET LINK
     */
 
     if (
-      !recoverySessionAvailable
+      !validRecoveryLink
     ) {
 
-      setError(
+      setErrorMessage(
 
-        'Your password reset link is invalid or expired. Please request a new password reset email.'
+        'This password reset link is invalid or expired. Please request a new password reset email.'
 
       )
+
 
       return
 
@@ -254,86 +381,110 @@ export function ResetPassword() {
 
 
     /*
-      PASSWORD VALIDATION
+      EMPTY PASSWORD
     */
 
     if (
-      password
+      !newPassword
+    ) {
+
+      setErrorMessage(
+
+        'Enter your new password.'
+
+      )
+
+
+      return
+
+    }
+
+
+    /*
+      MINIMUM LENGTH
+    */
+
+    if (
+      newPassword
         .length <
       8
     ) {
 
-      setError(
+      setErrorMessage(
 
         'Password must contain at least 8 characters.'
 
       )
 
+
       return
 
     }
 
 
     /*
-      UPPERCASE CHECK
+      UPPERCASE LETTER
     */
 
     if (
       !/[A-Z]/
         .test(
-          password
+          newPassword
         )
     ) {
 
-      setError(
+      setErrorMessage(
 
         'Password must contain at least one uppercase letter.'
 
       )
 
+
       return
 
     }
 
 
     /*
-      LOWERCASE CHECK
+      LOWERCASE LETTER
     */
 
     if (
       !/[a-z]/
         .test(
-          password
+          newPassword
         )
     ) {
 
-      setError(
+      setErrorMessage(
 
         'Password must contain at least one lowercase letter.'
 
       )
 
+
       return
 
     }
 
 
     /*
-      NUMBER CHECK
+      NUMBER
     */
 
     if (
       !/[0-9]/
         .test(
-          password
+          newPassword
         )
     ) {
 
-      setError(
+      setErrorMessage(
 
         'Password must contain at least one number.'
 
       )
+
 
       return
 
@@ -341,31 +492,37 @@ export function ResetPassword() {
 
 
     /*
-      CONFIRM PASSWORD
+      PASSWORD MATCH
     */
 
     if (
-      password !==
+      newPassword !==
       confirmPassword
     ) {
 
-      setError(
+      setErrorMessage(
 
         'New password and confirm password do not match.'
 
       )
+
 
       return
 
     }
 
 
-    setLoading(
+    setUpdating(
       true
     )
 
 
     try {
+
+      /*
+        UPDATE PASSWORD
+        IN SUPABASE AUTH
+      */
 
       const {
         error:
@@ -374,7 +531,8 @@ export function ResetPassword() {
         .auth
         .updateUser({
 
-          password,
+          password:
+            newPassword,
 
         })
 
@@ -383,31 +541,38 @@ export function ResetPassword() {
         updateError
       ) {
 
-        setError(
+        setErrorMessage(
+
           updateError
             .message
+
         )
+
 
         return
 
       }
 
 
-      setSuccess(
+      /*
+        SHOW SUCCESS
+      */
 
-        'Your password has been updated successfully. Redirecting to login...'
+      setSuccessMessage(
+
+        'Password updated successfully. Redirecting to the login page...'
 
       )
 
 
-      setPassword('')
+      setNewPassword('')
 
       setConfirmPassword('')
 
 
       /*
-        SIGN OUT THE
-        RECOVERY SESSION
+        SIGN OUT THE TEMPORARY
+        PASSWORD RECOVERY SESSION
       */
 
       await supabase
@@ -417,6 +582,9 @@ export function ResetPassword() {
 
       /*
         REDIRECT TO LOGIN
+
+        Customer can enter the
+        new password and login.
       */
 
       window
@@ -455,7 +623,7 @@ export function ResetPassword() {
       )
 
 
-      setError(
+      setErrorMessage(
 
         'Unable to update your password. Please request a new reset link and try again.'
 
@@ -464,7 +632,7 @@ export function ResetPassword() {
 
     } finally {
 
-      setLoading(
+      setUpdating(
         false
       )
 
@@ -474,11 +642,11 @@ export function ResetPassword() {
 
 
   /*
-    LOADING SCREEN
+    CHECKING RESET LINK
   */
 
   if (
-    checkingSession
+    checkingLink
   ) {
 
     return (
@@ -499,10 +667,13 @@ export function ResetPassword() {
             'center',
 
           background:
-            '#07111f',
+            '#06101d',
 
           color:
             '#ffffff',
+
+          fontFamily:
+            'Inter, Arial, sans-serif',
 
         }}
       >
@@ -519,6 +690,9 @@ export function ResetPassword() {
             gap:
               '12px',
 
+            fontSize:
+              '15px',
+
             fontWeight:
               700,
 
@@ -526,15 +700,12 @@ export function ResetPassword() {
         >
 
           <Loader2
-
-            size={24}
-
-            className="spin"
-
+            size={25}
           />
 
 
-          Verifying reset link...
+          Verifying your
+          password reset link...
 
         </div>
 
@@ -544,6 +715,10 @@ export function ResetPassword() {
 
   }
 
+
+  /*
+    RESET PASSWORD PAGE
+  */
 
   return (
 
@@ -562,16 +737,19 @@ export function ResetPassword() {
         justifyContent:
           'center',
 
+        boxSizing:
+          'border-box',
+
         padding:
-          '24px',
+          '22px',
 
         background:
 
           `radial-gradient(
             circle at top,
-            #162b46 0%,
-            #091728 48%,
-            #050d18 100%
+            #193453 0%,
+            #0a192b 48%,
+            #040b14 100%
           )`,
 
         fontFamily:
@@ -588,50 +766,53 @@ export function ResetPassword() {
             '100%',
 
           maxWidth:
-            '470px',
+            '460px',
+
+          boxSizing:
+            'border-box',
 
           padding:
-            '38px',
+            '36px',
 
           border:
 
             `1px solid
             rgba(
-              239,
-              169,
-              45,
-              0.25
+              245,
+              174,
+              46,
+              0.28
             )`,
 
           borderRadius:
-            '24px',
+            '25px',
 
           background:
 
             `linear-gradient(
               145deg,
               rgba(
-                22,
-                39,
-                62,
+                23,
+                42,
+                67,
                 0.98
               ),
               rgba(
                 7,
                 18,
                 32,
-                0.98
+                0.99
               )
             )`,
 
           boxShadow:
 
-            `0 30px 70px
+            `0 30px 75px
             rgba(
               0,
               0,
               0,
-              0.48
+              0.5
             )`,
 
         }}
@@ -642,10 +823,10 @@ export function ResetPassword() {
           style={{
 
             width:
-              '70px',
+              '72px',
 
             height:
-              '70px',
+              '72px',
 
             display:
               'flex',
@@ -659,8 +840,18 @@ export function ResetPassword() {
             margin:
               '0 auto 22px',
 
+            border:
+
+              `1px solid
+              rgba(
+                245,
+                174,
+                46,
+                0.32
+              )`,
+
             borderRadius:
-              '20px',
+              '22px',
 
             color:
               '#f5ae2e',
@@ -671,14 +862,14 @@ export function ResetPassword() {
                 245,
                 174,
                 46,
-                0.13
+                0.12
               )`,
 
           }}
         >
 
           <KeyRound
-            size={35}
+            size={36}
           />
 
         </div>
@@ -700,18 +891,18 @@ export function ResetPassword() {
                 '#f5ae2e',
 
               fontSize:
-                '12px',
+                '11px',
 
               fontWeight:
                 800,
 
               letterSpacing:
-                '1.4px',
+                '1.5px',
 
             }}
           >
 
-            ACCOUNT SECURITY
+            SECURE ACCOUNT RECOVERY
 
           </span>
 
@@ -726,12 +917,15 @@ export function ResetPassword() {
                 '#ffffff',
 
               fontSize:
-                '31px',
+                '30px',
+
+              lineHeight:
+                1.2,
 
             }}
           >
 
-            Reset Password
+            Create New Password
 
           </h1>
 
@@ -743,7 +937,7 @@ export function ResetPassword() {
                 '0 0 28px',
 
               color:
-                '#91a0b6',
+                '#91a1b8',
 
               fontSize:
                 '14px',
@@ -754,8 +948,9 @@ export function ResetPassword() {
             }}
           >
 
-            Create a secure new password
-            for your account.
+            Enter and confirm your
+            new password to recover
+            your account.
 
           </p>
 
@@ -763,7 +958,7 @@ export function ResetPassword() {
 
 
         {
-          !recoverySessionAvailable && (
+          !validRecoveryLink && (
 
             <div
               style={{
@@ -781,7 +976,7 @@ export function ResetPassword() {
                     248,
                     113,
                     113,
-                    0.35
+                    0.4
                   )`,
 
                 borderRadius:
@@ -796,22 +991,24 @@ export function ResetPassword() {
                     127,
                     29,
                     29,
-                    0.25
+                    0.28
                   )`,
 
                 fontSize:
                   '13px',
 
                 lineHeight:
-                  1.5,
+                  1.55,
 
               }}
             >
 
-              This password reset link
-              is invalid or expired.
-              Return to login and request
-              a new reset email.
+              This reset link is
+              invalid or expired.
+              Return to the login
+              page and request a
+              new password reset
+              email.
 
             </div>
 
@@ -820,11 +1017,9 @@ export function ResetPassword() {
 
 
         <form
-
           onSubmit={
-            handlePasswordUpdate
+            handleUpdatePassword
           }
-
         >
 
 
@@ -838,7 +1033,7 @@ export function ResetPassword() {
                 '19px',
 
               color:
-                '#dbe4f0',
+                '#dce5f1',
 
               fontSize:
                 '13px',
@@ -877,14 +1072,14 @@ export function ResetPassword() {
                     148,
                     163,
                     184,
-                    0.25
+                    0.28
                   )`,
 
                 borderRadius:
                   '12px',
 
                 background:
-                  '#0a1728',
+                  '#081525',
 
               }}
             >
@@ -894,7 +1089,7 @@ export function ResetPassword() {
                 size={19}
 
                 color=
-                  "#7f91a8"
+                  "#8293aa"
 
               />
 
@@ -903,7 +1098,7 @@ export function ResetPassword() {
 
                 type={
 
-                  showPassword
+                  showNewPassword
 
                     ? 'text'
 
@@ -912,7 +1107,7 @@ export function ResetPassword() {
                 }
 
                 value={
-                  password
+                  newPassword
                 }
 
                 placeholder=
@@ -927,7 +1122,7 @@ export function ResetPassword() {
 
                   event =>
 
-                    setPassword(
+                    setNewPassword(
 
                       event
                         .target
@@ -942,8 +1137,11 @@ export function ResetPassword() {
                   width:
                     '100%',
 
+                  minWidth:
+                    0,
+
                   minHeight:
-                    '50px',
+                    '52px',
 
                   border:
                     'none',
@@ -971,13 +1169,14 @@ export function ResetPassword() {
 
                 aria-label=
 
-                  "Show or hide password"
+                  "Show or hide new password"
 
                 onClick={() =>
 
-                  setShowPassword(
+                  setShowNewPassword(
 
                     current =>
+
                       !current
 
                   )
@@ -986,11 +1185,17 @@ export function ResetPassword() {
 
                 style={{
 
+                  display:
+                    'flex',
+
                   border:
                     'none',
 
+                  padding:
+                    '5px',
+
                   color:
-                    '#8fa0b7',
+                    '#91a1b7',
 
                   background:
                     'transparent',
@@ -1003,7 +1208,7 @@ export function ResetPassword() {
               >
 
                 {
-                  showPassword
+                  showNewPassword
 
                     ? (
 
@@ -1036,10 +1241,10 @@ export function ResetPassword() {
                 'block',
 
               marginBottom:
-                '20px',
+                '19px',
 
               color:
-                '#dbe4f0',
+                '#dce5f1',
 
               fontSize:
                 '13px',
@@ -1078,24 +1283,24 @@ export function ResetPassword() {
                     148,
                     163,
                     184,
-                    0.25
+                    0.28
                   )`,
 
                 borderRadius:
                   '12px',
 
                 background:
-                  '#0a1728',
+                  '#081525',
 
               }}
             >
 
-              <ShieldCheck
+              <LockKeyhole
 
                 size={19}
 
                 color=
-                  "#7f91a8"
+                  "#8293aa"
 
               />
 
@@ -1143,8 +1348,11 @@ export function ResetPassword() {
                   width:
                     '100%',
 
+                  minWidth:
+                    0,
+
                   minHeight:
-                    '50px',
+                    '52px',
 
                   border:
                     'none',
@@ -1179,6 +1387,7 @@ export function ResetPassword() {
                   setShowConfirmPassword(
 
                     current =>
+
                       !current
 
                   )
@@ -1187,11 +1396,17 @@ export function ResetPassword() {
 
                 style={{
 
+                  display:
+                    'flex',
+
                   border:
                     'none',
 
+                  padding:
+                    '5px',
+
                   color:
-                    '#8fa0b7',
+                    '#91a1b7',
 
                   background:
                     'transparent',
@@ -1236,23 +1451,38 @@ export function ResetPassword() {
               marginBottom:
                 '20px',
 
+              padding:
+                '13px',
+
+              borderRadius:
+                '11px',
+
               color:
-                '#8797ad',
+                '#8fa0b7',
+
+              background:
+
+                `rgba(
+                  8,
+                  21,
+                  37,
+                  0.75
+                )`,
 
               fontSize:
                 '12px',
 
               lineHeight:
-                1.7,
+                1.75,
 
             }}
           >
 
-            Password must contain:
+            Password requirements:
 
             <br />
 
-            • At least 8 characters
+            • Minimum 8 characters
 
             <br />
 
@@ -1270,7 +1500,7 @@ export function ResetPassword() {
 
 
           {
-            error && (
+            errorMessage && (
 
               <div
                 style={{
@@ -1288,7 +1518,7 @@ export function ResetPassword() {
                       248,
                       113,
                       113,
-                      0.35
+                      0.4
                     )`,
 
                   borderRadius:
@@ -1303,16 +1533,21 @@ export function ResetPassword() {
                       127,
                       29,
                       29,
-                      0.25
+                      0.28
                     )`,
 
                   fontSize:
                     '13px',
 
+                  lineHeight:
+                    1.5,
+
                 }}
               >
 
-                {error}
+                {
+                  errorMessage
+                }
 
               </div>
 
@@ -1321,7 +1556,7 @@ export function ResetPassword() {
 
 
           {
-            success && (
+            successMessage && (
 
               <div
                 style={{
@@ -1348,7 +1583,7 @@ export function ResetPassword() {
                       74,
                       222,
                       128,
-                      0.35
+                      0.4
                     )`,
 
                   borderRadius:
@@ -1363,21 +1598,26 @@ export function ResetPassword() {
                       20,
                       83,
                       45,
-                      0.25
+                      0.28
                     )`,
 
                   fontSize:
                     '13px',
 
+                  lineHeight:
+                    1.5,
+
                 }}
               >
 
                 <CheckCircle2
-                  size={18}
+                  size={19}
                 />
 
 
-                {success}
+                {
+                  successMessage
+                }
 
               </div>
 
@@ -1391,9 +1631,9 @@ export function ResetPassword() {
 
             disabled={
 
-              loading ||
+              updating ||
 
-              !recoverySessionAvailable
+              !validRecoveryLink
 
             }
 
@@ -1403,7 +1643,7 @@ export function ResetPassword() {
                 '100%',
 
               minHeight:
-                '51px',
+                '52px',
 
               display:
                 'flex',
@@ -1437,9 +1677,9 @@ export function ResetPassword() {
 
               cursor:
 
-                loading ||
+                updating ||
 
-                !recoverySessionAvailable
+                !validRecoveryLink
 
                   ? 'not-allowed'
 
@@ -1447,11 +1687,11 @@ export function ResetPassword() {
 
               opacity:
 
-                loading ||
+                updating ||
 
-                !recoverySessionAvailable
+                !validRecoveryLink
 
-                  ? 0.6
+                  ? 0.58
 
                   : 1,
 
@@ -1460,19 +1700,14 @@ export function ResetPassword() {
           >
 
             {
-              loading
+              updating
 
                 ? (
 
                   <>
 
                     <Loader2
-
-                      className=
-                        "spin"
-
                       size={19}
-
                     />
 
 
@@ -1520,7 +1755,7 @@ export function ResetPassword() {
                 '100%',
 
               marginTop:
-                '14px',
+                '13px',
 
               padding:
                 '11px',
@@ -1529,7 +1764,7 @@ export function ResetPassword() {
                 'none',
 
               color:
-                '#9eabc0',
+                '#9ba9bc',
 
               background:
                 'transparent',
