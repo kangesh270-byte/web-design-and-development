@@ -25,6 +25,13 @@ import {
 } from './pages/Login'
 
 
+// PASSWORD RESET PAGE
+
+import {
+  ResetPassword,
+} from './pages/ResetPassword'
+
+
 // ADMIN PAGES
 
 import {
@@ -83,7 +90,9 @@ import {
 
 
 export default function App() {
+
   return (
+
     <BrowserRouter>
 
       <AuthProvider>
@@ -92,14 +101,37 @@ export default function App() {
 
 
           {/* =========================
-              LOGIN
+              PUBLIC AUTH ROUTES
           ========================= */}
 
+
+          {/* LOGIN PAGE */}
+
           <Route
+
             path="/login"
+
             element={
+
               <Login />
+
             }
+
+          />
+
+
+          {/* RESET PASSWORD PAGE */}
+
+          <Route
+
+            path="/reset-password"
+
+            element={
+
+              <ResetPassword />
+
+            }
+
           />
 
 
@@ -111,8 +143,11 @@ export default function App() {
           {/* ADMIN DASHBOARD */}
 
           <Route
+
             path="/dashboard"
+
             element={
+
               <ProtectedRoute>
 
                 <AdminRoute>
@@ -122,15 +157,20 @@ export default function App() {
                 </AdminRoute>
 
               </ProtectedRoute>
+
             }
+
           />
 
 
           {/* ADMIN CUSTOMERS */}
 
           <Route
+
             path="/customers"
+
             element={
+
               <ProtectedRoute>
 
                 <AdminRoute>
@@ -140,15 +180,20 @@ export default function App() {
                 </AdminRoute>
 
               </ProtectedRoute>
+
             }
+
           />
 
 
           {/* ADMIN PRODUCTS */}
 
           <Route
+
             path="/products"
+
             element={
+
               <ProtectedRoute>
 
                 <AdminRoute>
@@ -158,15 +203,20 @@ export default function App() {
                 </AdminRoute>
 
               </ProtectedRoute>
+
             }
+
           />
 
 
           {/* ADMIN SALES */}
 
           <Route
+
             path="/sales"
+
             element={
+
               <ProtectedRoute>
 
                 <AdminRoute>
@@ -176,15 +226,20 @@ export default function App() {
                 </AdminRoute>
 
               </ProtectedRoute>
+
             }
+
           />
 
 
           {/* ADMIN EMPLOYEES */}
 
           <Route
+
             path="/employees"
+
             element={
+
               <ProtectedRoute>
 
                 <AdminRoute>
@@ -194,15 +249,20 @@ export default function App() {
                 </AdminRoute>
 
               </ProtectedRoute>
+
             }
+
           />
 
 
           {/* ADMIN REPORTS */}
 
           <Route
+
             path="/reports"
+
             element={
+
               <ProtectedRoute>
 
                 <AdminRoute>
@@ -212,7 +272,9 @@ export default function App() {
                 </AdminRoute>
 
               </ProtectedRoute>
+
             }
+
           />
 
 
@@ -224,84 +286,114 @@ export default function App() {
           {/* CUSTOMER DASHBOARD */}
 
           <Route
+
             path="/customer"
+
             element={
+
               <ProtectedRoute>
 
                 <CustomerDashboard />
 
               </ProtectedRoute>
+
             }
+
           />
 
 
           {/* CUSTOMER PRODUCTS */}
 
           <Route
+
             path="/customer/products"
+
             element={
+
               <ProtectedRoute>
 
                 <CustomerProducts />
 
               </ProtectedRoute>
+
             }
+
           />
 
 
           {/* CUSTOMER MY ORDERS */}
 
           <Route
+
             path="/customer/orders"
+
             element={
+
               <ProtectedRoute>
 
                 <MyOrders />
 
               </ProtectedRoute>
+
             }
+
           />
 
 
           {/* CUSTOMER TRACK ORDER */}
 
           <Route
+
             path="/customer/track-order"
+
             element={
+
               <ProtectedRoute>
 
                 <TrackOrder />
 
               </ProtectedRoute>
+
             }
+
           />
 
 
           {/* CUSTOMER PROFILE */}
 
           <Route
+
             path="/customer/profile"
+
             element={
+
               <ProtectedRoute>
 
                 <CustomerProfile />
 
               </ProtectedRoute>
+
             }
+
           />
 
 
           {/* CUSTOMER HELP AND SUPPORT */}
 
           <Route
+
             path="/customer/support"
+
             element={
+
               <ProtectedRoute>
 
                 <CustomerSupport />
 
               </ProtectedRoute>
+
             }
+
           />
 
 
@@ -313,26 +405,42 @@ export default function App() {
           {/* HOME */}
 
           <Route
+
             path="/"
+
             element={
+
               <Navigate
+
                 to="/customer"
+
                 replace
+
               />
+
             }
+
           />
 
 
           {/* INVALID URL */}
 
           <Route
+
             path="*"
+
             element={
+
               <Navigate
+
                 to="/login"
+
                 replace
+
               />
+
             }
+
           />
 
 
@@ -341,5 +449,7 @@ export default function App() {
       </AuthProvider>
 
     </BrowserRouter>
+
   )
+
 }
