@@ -1,0 +1,31 @@
+id,name,category_name,category_id,price,cost,stock_quantity,reorder_level,supplier
+c80f2764-5ba1-4c8f-91c0-f20b6643a31e,Aether PowerEdge R750 Rack Server,Electronics,1a6e8e11-20ec-4dcf-8ae6-cd85bc2a576f,4999.0,3200.0,14,5,Aether Systems
+126b9047-04df-434c-9ddd-f4876acab6e5,Apex Core 48-Port PoE+ Switch,Networking,9176be1b-43e6-4a73-a15a-3910627314d9,1250.0,750.0,4,6,Apex Networks
+583d5d84-aa1e-41a3-b36e-e7a021065362,Novus ThinkPad P16 Gen 2 Rig,Electronics,1a6e8e11-20ec-4dcf-8ae6-cd85bc2a576f,2899.0,1950.0,8,4,Novus Distribution
+00650df2-7c49-4f4b-90a1-aa132f0a92f1,Zenith Mac Studio M2 Ultra,Electronics,1a6e8e11-20ec-4dcf-8ae6-cd85bc2a576f,3499.0,2400.0,2,5,Zenith Imports
+f4dd0db5-ad60-4a5a-ad53-b0d592d75697,Aether Cloud Security Suite Enterprise,Software Licenses,6502f8da-f03c-4683-b40e-1491e404f042,899.0,300.0,50,10,Aether Systems
+f2dc1854-9657-4043-bb26-d99a204bc39b,Apex Ergonomic Executive Mesh Chair,Furniture,9d1240ef-afb7-484d-bbe7-75c580af7723,349.0,190.0,0,5,Apex Furnishings
+9d483008-be58-4011-8f15-647780f16942,Vantage Standing Desk 1600mm,Furniture,9d1240ef-afb7-484d-bbe7-75c580af7723,499.0,260.0,12,4,Vantage Interiors
+aa51c4ec-78b0-4c7f-8246-da01b7f0443c,Orbit 27in 4K Monitor,Electronics,1a6e8e11-20ec-4dcf-8ae6-cd85bc2a576f,429.0,260.0,18,6,Orbit Displays
+c2e4a20b-7ef1-458c-81e5-6e91b36757dd,Helix Wireless Mechanical Keyboard,Accessories,929eb2d6-5197-4dad-893a-ec2fc43b9171,89.0,42.0,40,10,Helix Peripherals
+959750de-6b39-4006-9411-b458eaf6f66d,Helix Precision Wireless Mouse,Accessories,929eb2d6-5197-4dad-893a-ec2fc43b9171,39.0,18.0,55,10,Helix Peripherals
+f28b2846-a424-41b7-b331-6653b740900a,Cirrus 1TB NVMe SSD,Electronics,1a6e8e11-20ec-4dcf-8ae6-cd85bc2a576f,89.0,55.0,60,15,Cirrus Storage
+35026cca-33eb-4599-84bf-dc886a345497,Cirrus 2TB External HDD,Electronics,1a6e8e11-20ec-4dcf-8ae6-cd85bc2a576f,79.0,48.0,34,10,Cirrus Storage
+31db4f21-41de-489c-9307-2f96e4e03139,Meridian A4 Copier Paper (5 Ream Box),Office Supplies,ddcdc70d-655a-49c1-a8e5-c0ad80395f19,29.0,15.0,120,25,Meridian Paper Co
+dc083719-9699-45a8-8f79-361a63805145,Meridian Premium Ink Cartridge Set,Office Supplies,ddcdc70d-655a-49c1-a8e5-c0ad80395f19,54.0,28.0,45,12,Meridian Paper Co
+d8b9de9a-7f19-454d-b8b4-db3565fa82fd,Vantage Filing Cabinet 4-Drawer,Furniture,9d1240ef-afb7-484d-bbe7-75c580af7723,219.0,120.0,9,4,Vantage Interiors
+b81b6024-a971-4520-957f-5b04f537bd76,Apex Core 24-Port Gigabit Switch,Networking,9176be1b-43e6-4a73-a15a-3910627314d9,349.0,190.0,16,5,Apex Networks
+565b0007-25e7-4387-a2da-9ab123b297d4,Apex WiFi 6 Access Point,Networking,9176be1b-43e6-4a73-a15a-3910627314d9,199.0,110.0,22,6,Apex Networks
+f9235b2e-1f0c-413e-bc9e-aea32fff6762,Aether DevOps Pipeline License (Annual),Software Licenses,6502f8da-f03c-4683-b40e-1491e404f042,1499.0,500.0,30,8,Aether Systems
+85204e31-5a68-4d0d-8861-73dd325e0186,Aether Analytics BI Suite License,Software Licenses,6502f8da-f03c-4683-b40e-1491e404f042,1899.0,650.0,25,8,Aether Systems
+2676debc-5cb9-420b-a546-ce18d9511337,Novus Business Laptop 14in,Electronics,1a6e8e11-20ec-4dcf-8ae6-cd85bc2a576f,1099.0,720.0,20,6,Novus Distribution
+74417605-f630-4d0c-b000-16684f575eb5,Orbit UltraWide 34in Monitor,Electronics,1a6e8e11-20ec-4dcf-8ae6-cd85bc2a576f,649.0,420.0,7,4,Orbit Displays
+90eb2ddc-5d23-4e66-921f-f082675daff0,Helix USB-C Docking Station,Accessories,929eb2d6-5197-4dad-893a-ec2fc43b9171,149.0,85.0,28,8,Helix Peripherals
+89fd7868-9c42-4d01-acec-5076c9906529,Helix Noise-Cancelling Headset,Accessories,929eb2d6-5197-4dad-893a-ec2fc43b9171,129.0,70.0,33,8,Helix Peripherals
+f3160e6a-6f8a-4682-a667-780c6b81b1be,Vantage Conference Table 3m,Furniture,9d1240ef-afb7-484d-bbe7-75c580af7723,899.0,520.0,3,2,Vantage Interiors
+c01450fd-f183-4971-8bdc-070141711edf,Meridian Sticky Notes Bulk Pack,Office Supplies,ddcdc70d-655a-49c1-a8e5-c0ad80395f19,12.0,5.0,200,40,Meridian Paper Co
+268757f1-3097-4a7e-b831-69ee684b3142,Meridian Whiteboard Marker Set,Office Supplies,ddcdc70d-655a-49c1-a8e5-c0ad80395f19,18.0,8.0,90,20,Meridian Paper Co
+9b6744b7-8a91-42e4-862d-309149e20430,Cirrus NAS 4-Bay Enclosure,Electronics,1a6e8e11-20ec-4dcf-8ae6-cd85bc2a576f,549.0,340.0,6,4,Cirrus Storage
+4a127c12-fa3a-4543-9b57-865c40b4354a,Apex Managed Firewall Appliance,Networking,9176be1b-43e6-4a73-a15a-3910627314d9,899.0,560.0,5,3,Apex Networks
+ba943a01-def2-4ab3-857d-8aa0a0f6c863,Aether Endpoint Protection License,Software Licenses,6502f8da-f03c-4683-b40e-1491e404f042,649.0,220.0,40,10,Aether Systems
+43e09351-99c5-4d3b-b5da-85ba35b9b92c,Vantage Task Chair Standard,Furniture,9d1240ef-afb7-484d-bbe7-75c580af7723,159.0,85.0,25,8,Vantage Interiors
