@@ -14906,3 +14906,113 @@ select option {
   }
 
 }
+/* ==============================
+   GLOBAL MOBILE RESPONSIVE FIX
+================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Tablet and mobile */
+
+@media screen and (max-width: 768px) {
+
+  body {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  main {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  button {
+    max-width: 100%;
+  }
+
+  .modal {
+    width: calc(100% - 32px);
+    max-width: 500px;
+    margin: auto;
+  }
+
+  table {
+    min-width: 650px;
+  }
+
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+  }
+}
+
+/* Small mobile */
+
+@media screen and (max-width: 480px) {
+
+  main {
+    padding: 12px;
+  }
+
+  .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font-size: 16px;
+  }
+
+  .modal {
+    width: calc(100% - 24px);
+  }
+}
